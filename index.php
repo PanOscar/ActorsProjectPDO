@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl-PL">
 	<head>
-		<title></title>
+		<title>sa</title>
 		
 	<!-- znaczniki META -->
 		<meta charset="utf-8">
