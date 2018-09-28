@@ -37,7 +37,8 @@
 				
 		</main>
 		<footer>
-		
+		<!-- cos 
+		-->
 		</footer>
 	</body>
 </html>
