@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl-PL">
 	<head>
-		<title>sa</title>
+		<title></title>
 		
 	<!-- znaczniki META -->
 		<meta charset="utf-8">
@@ -28,17 +28,18 @@
 		<meta name="theme-color" content="#ffffff">
 		-->
 
+		
 	</head>
 	<body>
 		<header>
-		
+			<!--
+			## Tutaj zróbcie stronke z panelem logowania do admina lub też jeśli checie to możecie na głownej dać formularzyk
+			-->
 		</header>
 		<main>
 				
 		</main>
 		<footer>
-		<!-- cos 
-		-->
 		</footer>
 	</body>
 </html>
