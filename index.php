@@ -50,8 +50,8 @@ include 'connect.php';
             <div class="background"></div>
 			<nav>
 				<div class="nav">
-						<a href="?id=will"><div class="li blurred-bg bialy"><span class="zdj">Will Smith</span></div></a>
-						<a href="?id=leo"><div class="li blurred-bg bialy"><span class="zdj">Leonardo DiCaprio</span></div></a>
+						<a href="?act=will"><div class="li blurred-bg bialy"><span class="zdj">Will Smith</span></div></a>
+						<a href="?act=leo"><div class="li blurred-bg bialy"><span class="zdj">Leonardo DiCaprio</span></div></a>
 						<a href="?fax"><div class="li blurred-bg bialy"><span>FAX</span></div></a>
 						<?php
 							if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
@@ -68,8 +68,8 @@ include 'connect.php';
 								<a href="?loging"><div class="li blurred-bg bialy"><span>Login</span></div></a>
 								<?php
 							}
-							if(isset($_GET['id'])){
-								$id = $_GET['id'];
+							if(isset($_GET['act'])){
+								$id = $_GET['act'];
 								$stmt = $conn->prepare('SELECT * FROM posts WHERE id = ?');
 								$stmt->bind_param('s', $id);
 								$stmt->execute();
@@ -84,7 +84,7 @@ include 'connect.php';
 							} else if(isset($_GET['register'])){
 								
 							} else {
-								$id = $_GET['id']= "will";
+								$id = $_GET['act']= "will";
 								$stmt = $conn->prepare('SELECT * FROM posts WHERE id = ?');
 								$stmt->bind_param('s', $id);
 								$stmt->execute();
@@ -100,24 +100,24 @@ include 'connect.php';
 				<div class="box blurred-bg bialy">
 					<div class="content">
 							<?php
-								if(isset($_GET['id'])){
+								if(isset($_GET['act'])){
 //############### ID ################
 							?>
 								<img src="img/<?php echo $id ?>.png" class="img_content" alt="Will cały">
-									<div class="przedstawienie" id="d1"><?php echo $row['d1'] ?></div>
+									<div class="przedstawienie" id="d1" <?php if(isset($_SESSION['loggedin']) && $_SESSION['typ'] == 'admin'){echo "contenteditable='true'";} ?>onBlur="SaveToDatabase(this,this,'<?php echo $row['id']; ?>')"><?php echo $row['d1'] ?></div>
 									<br>
-									<p id="d1"><?php echo $row['p1'] ?></p>
-									<br>
-									<br>
-									<div class="naglowek" id="d2"><?php echo $row['d2'] ?></div>
+									<p id="p1" <?php if(isset($_SESSION['loggedin']) && $_SESSION['typ'] == 'admin'){echo "contenteditable='true'";} ?>onBlur="SaveToDatabase(this,this,'<?php echo $row['id']; ?>')"><?php echo $row['p1'] ?></p>
 									<br>
 									<br>
-									<p id="p2"><?php echo $row['p2'] ?></p>
+									<div class="naglowek" id="d2" <?php if(isset($_SESSION['loggedin']) && $_SESSION['typ'] == 'admin'){echo "contenteditable='true'";} ?>onBlur="SaveToDatabase(this,this,'<?php echo $row['id']; ?>')"><?php echo $row['d2'] ?></div>
 									<br>
 									<br>
-									<div class="naglowek" id="d3"><?php echo $row['d3'] ?></div>
+									<p id="p2" <?php if(isset($_SESSION['loggedin']) && $_SESSION['typ'] == 'admin'){echo "contenteditable='true'";} ?>onBlur="SaveToDatabase(this,this,'<?php echo $row['id']; ?>')"><?php echo $row['p2'] ?></p>
 									<br>
-									<p id="p3"><?php echo $row['p3'] ?></p>
+									<br>
+									<div class="naglowek" id="d3" <?php if(isset($_SESSION['loggedin']) && $_SESSION['typ'] == 'admin'){echo "contenteditable='true'";} ?>onBlur="SaveToDatabase(this,this,'<?php echo $row['id']; ?>')"><?php echo $row['d3'] ?></div>
+									<br>
+									<p id="p3" <?php if(isset($_SESSION['loggedin']) && $_SESSION['typ'] == 'admin'){echo "contenteditable='true'";} ?>onBlur="SaveToDatabase(this,this,'<?php echo $row['id']; ?>')"><?php echo $row['p3'] ?></p>
 							<?php
 								} else if(isset($_GET['fax'])){
 //############### FAX ################
@@ -292,7 +292,15 @@ include 'connect.php';
 							data:{zapisz:"true",users_can_register:users_can_register}
 						});
 			 });
+			 
 		});
+		function SaveToDatabase(id,content,act){
+				 $.ajax({
+							type: "GET",
+							url: "update.php",
+							data:{id:id.getAttribute("id"),content:content.innerHTML, act:act }
+						});
+			 };
 		</script>
 		<script src="form.js"></script>
 	</body>
