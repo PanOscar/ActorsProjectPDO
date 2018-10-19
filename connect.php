@@ -1,22 +1,21 @@
 <?php
- $dbhost = 'localhost';
+ $host = 'localhost';
  $dbuser = 'root';
  $dbpass = '';
  $db =  'actors';
+ $charset = 'utf8mb4';
 
- $conn = new mysqli($dbhost, $dbuser, $dbpass, $db);
- $conn->set_charset("utf8");
- 
-if ($conn->connect_error) {
-    echo "Error: Niemożliwe połączenie z MSQL." . PHP_EOL;
-    echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
-    echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
-    exit;
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+try {
+     $conn = new PDO($dsn, $dbuser, $dbpass, $options);
+} catch (\PDOException $e) {
+     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
-
- function CloseCon($conn){
- $conn -> close();
- }
  
 
  ?>

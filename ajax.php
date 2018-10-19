@@ -6,7 +6,7 @@ include 'connect.php';
 	
 			$sql="SELECT * FROM options WHERE option_id = 1";
 				$result = $conn->query($sql);
-				$row = $result->fetch_assoc();
+				$row = $result->fetch();
 				if(isset($_GET['zapisz'])){
 					if($_GET['users_can_register']!=$row['option_value']){
 						if($row['option_value']==1){

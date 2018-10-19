@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'connect.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="pl-PL">
@@ -23,7 +24,13 @@ include 'connect.php';
 	 <!-- CSS-->
 		<link rel="Stylesheet" type="text/css" href="css/reset.css" >
 		<link rel="Stylesheet" type="text/css" href="css/normalize.css" >
-		
+		<?php
+function console_log( $data ){
+  echo '<script>';
+  echo 'console.log('. json_encode( $data ) .')';
+  echo '</script>';
+}
+		?>
 	 <!--Skrypty-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	</head>
@@ -33,7 +40,7 @@ include 'connect.php';
 			if($_SESSION['typ'] == 'admin'){
 			$sql="SELECT * FROM options WHERE option_id ";
 				$result = $conn->query($sql);
-				$row = $result->fetch_assoc();
+				$row = $result->fetch();
 				?>
 				<div id='mask'></div>
 				<div id='control_panel'>
@@ -70,12 +77,16 @@ include 'connect.php';
 							}
 							if(isset($_GET['act'])){
 								$id = $_GET['act'];
-								$stmt = $conn->prepare('SELECT * FROM posts WHERE id = ?');
-								$stmt->bind_param('s', $id);
+								$stmt = $conn->prepare('SELECT Count(*) FROM posts WHERE id = ?');
+								$stmt->bindValue(1, $id, PDO::PARAM_STR);
 								$stmt->execute();
-								$result = $stmt->get_result();
-								if($result->num_rows > 0){
-									$row = $result->fetch_assoc();
+		
+								if($stmt->fetchColumn() > 0){
+									$stmt = $conn->prepare('SELECT * FROM posts WHERE id = ?');
+									$stmt->bindValue(1, $id, PDO::PARAM_STR);
+									$stmt->execute();
+									$row = $stmt->fetch();
+									
 								}
 							} else if(isset($_GET['loging'])){
 								
@@ -84,13 +95,18 @@ include 'connect.php';
 							} else if(isset($_GET['register'])){
 								
 							} else {
-								$id = $_GET['act']= "will";
-								$stmt = $conn->prepare('SELECT * FROM posts WHERE id = ?');
-								$stmt->bind_param('s', $id);
+								$id = $_GET['act'] = "will";
+								
+								$stmt = $conn->prepare('SELECT COUNT(*) FROM posts WHERE id = ?');
+								$stmt->bindValue(1, $id , PDO::PARAM_STR);
 								$stmt->execute();
-								$result = $stmt->get_result();
-								if($result->num_rows > 0){
-									$row = $result->fetch_assoc();
+		
+								if($stmt->fetchColumn() > 0){
+									$stmt = $conn->prepare('SELECT * FROM posts WHERE id = ?');
+									$stmt->bindValue(1, $id, PDO::PARAM_STR);
+									$stmt->execute();
+									$row = $stmt->fetch();
+									
 								}
 							}		
 						?>
@@ -147,13 +163,16 @@ include 'connect.php';
 										$login = $_GET['login'];
 										$pass = $_GET['pass'];
 										//SQL INJECTION PROTECTION
-											$stmt = $conn->prepare('SELECT * FROM members WHERE login = ?');
-											$stmt->bind_param('s', $login);
+											$stmt = $conn->prepare('SELECT COUNT(*) FROM members WHERE login = ?');
+											$stmt->bindValue(1, $login , PDO::PARAM_STR);
 											$stmt->execute();
-											$result = $stmt->get_result();
-										if ($result->num_rows > 0) {
+											
+										if ($stmt->fetchColumn() > 0) {
 											// output data of each row
-											$row = $result->fetch_assoc();
+											$stmt = $conn->prepare('SELECT * FROM members WHERE login = ?');
+											$stmt->bindValue(1, $login , PDO::PARAM_STR);
+											$stmt->execute();
+											$row = $stmt->fetch();
 											$password_db = password_hash($pass, PASSWORD_BCRYPT, $options);
 												if (!password_verify($pass, $row['pass'])) {
 													$zle = '<div style="color:white;">Invalid password or username.</div>';
@@ -204,20 +223,24 @@ include 'connect.php';
 											//Set Refresh header using PHP.
 											header( "refresh:5;url=index.php" );
 										} else {
-											$sql = " SELECT * FROM options ";
+											$sql = " SELECT COUNT(*) FROM options ";
 											$result = $conn->query($sql);
-											if ($result->num_rows > 0) {
+											if ($result->fetchColumn() > 0) {
+												$sql = " SELECT * FROM options ";
+												$result = $conn->query($sql);
 												// output data of each row
-												$row = $result->fetch_assoc();
+												$row = $result->fetch();
 												if($row['option_name'] == 'users_can_register' && $row['option_value'] == '1'){
 													$options = [
 													'cost' => 11
 													];
 														if(isset($_GET['rejestr'])){
-															$sql = "SELECT * FROM members WHERE id";
+															$sql = "SELECT COUNT(*) FROM members WHERE id";
 															$result = $conn->query($sql);
-															if($result->num_rows > 0){
-																$row = $result->fetch_assoc();
+															if($result->fetchColumn() > 0){
+																$sql = "SELECT * FROM members WHERE id";
+																$result = $conn->query($sql);
+																$row = $result->fetch();
 															}
 															$login = $_GET['login'];
 															$pass = $_GET['pass'];
@@ -227,7 +250,9 @@ include 'connect.php';
 															}else {
 																$password_db = password_hash($pass, PASSWORD_BCRYPT, $options);
 															$stmt = $conn->prepare('INSERT INTO members (login, pass, quest, typ) VALUES (?,?,?,"member")');
-															$stmt->bind_param('sss', $login, $password_db, $quest );
+															$stmt->bindValue(1, $login , PDO::PARAM_STR);
+															$stmt->bindValue(2, $pass , PDO::PARAM_STR);
+															$stmt->bindValue(3, $quest , PDO::PARAM_STR);
 															$stmt->execute();
 																$stmt->close();
 																header( "refresh:0;url=index.php?loging" );

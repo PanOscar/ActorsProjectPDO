@@ -7,7 +7,7 @@ if($_SESSION['typ'] == 'admin'){
 			$act = $_GET['act'];
 			$sql="SELECT * FROM posts	WHERE id = '".$act."'";
 			$result = $conn->query($sql);
-			$row = $result->fetch_assoc();
+			$row = $result->fetch();
 			$sql1= "UPDATE posts SET ".$id." = '".$content."' WHERE id = '".$act."'";
 			$conn->query($sql1);
 }
