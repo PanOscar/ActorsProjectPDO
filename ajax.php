@@ -1,14 +1,12 @@
 ﻿<?php
 session_start();
-
 include 'connect.php';
-		$id = @$_GET['id'];
-	
+		$id = @$_POST['id'];
 			$sql="SELECT * FROM options WHERE option_id = 1";
 				$result = $conn->query($sql);
 				$row = $result->fetch_assoc();
-				if(isset($_GET['zapisz'])){
-					if($_GET['users_can_register']!=$row['option_value']){
+				if(isset($_POST['zapisz'])){
+					if($_POST['users_can_register']!=$row['option_value']){
 						if($row['option_value']==1){
 							
 								$sql1= "UPDATE options SET option_value = '0' WHERE option_id = 1";
@@ -20,7 +18,5 @@ include 'connect.php';
 								header("Refresh:0");
 						}	
 					}
-				}
-				
-				
+				}	
 ?>

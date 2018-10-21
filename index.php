@@ -1,7 +1,8 @@
 <?php
 session_start();
-include 'connect.php';
+require 'connect.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="pl-PL">
 	<head>
@@ -14,15 +15,15 @@ include 'connect.php';
 
 		<!--FAVICON -->
 			<link rel="Shortcut icon" href="" />
-			<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
-			<link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
-			<link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
-			<link rel="manifest" href="favicons/manifest.json">
-			<link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#a327a6">
+			<link rel="apple-touch-icon" sizes="180x180" href="http://localhost/actorsproject/favicons/apple-touch-icon.png">
+			<link rel="icon" type="image/png" sizes="32x32" href="http://localhost/actorsproject/favicons/favicon-32x32.png">
+			<link rel="icon" type="image/png" sizes="16x16" href="http://localhost/actorsproject/favicons/favicon-16x16.png">
+			<link rel="manifest" href="http://localhost/actorsproject/favicons/manifest.json">
+			<link rel="mask-icon" href="http://localhost/actorsproject/favicons/safari-pinned-tab.svg" color="#a327a6">
 			<meta name="theme-color" content="#701d1d">
 	 <!-- CSS-->
-		<link rel="Stylesheet" type="text/css" href="css/reset.css" >
-		<link rel="Stylesheet" type="text/css" href="css/normalize.css" >
+		<link rel="Stylesheet" type="text/css" href="http://localhost/actorsproject/css/reset.css" >
+		<link rel="Stylesheet" type="text/css" href="http://localhost/actorsproject/css/normalize.css" >
 		
 	 <!--Skrypty-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -38,7 +39,7 @@ include 'connect.php';
 				<div id='mask'></div>
 				<div id='control_panel'>
 					<div style='text-align:center;font-size:40px; background:black'>Ustawienia forum</div>
-					<form class='ustawienia' method='GET' action=''>
+					<form class='ustawienia' method='POST' action=''>
 						<input type="hidden" id="users_can_register2" name="users_can_register" value="0"><label><input type="checkbox" id="users_can_register" name="users_can_register" value="1"<?php echo ($row['option_value']==1 && $row['option_name']=='users_can_register' ? 'checked' : '');?>> Użytkownicy mogą się rejestrować</label>
 						<br>
 					</form>
@@ -50,9 +51,9 @@ include 'connect.php';
             <div class="background"></div>
 			<nav>
 				<div class="nav">
-						<a href="?act=will"><div class="li blurred-bg bialy"><span class="zdj">Will Smith</span></div></a>
-						<a href="?act=leo"><div class="li blurred-bg bialy"><span class="zdj">Leonardo DiCaprio</span></div></a>
-						<a href="?fax"><div class="li blurred-bg bialy"><span>FAX</span></div></a>
+						<a href="http://localhost/actorsproject/act/will/"><div class="li blurred-bg bialy"><span class="zdj">Will Smith</span></div></a>
+						<a href="http://localhost/actorsproject/act/leo/"><div class="li blurred-bg bialy"><span class="zdj">Leonardo DiCaprio</span></div></a>
+						<a href="fax"><div class="li blurred-bg bialy"><span>FAX</span></div></a>
 						<?php
 							if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
 								?>
@@ -65,7 +66,7 @@ include 'connect.php';
 								}
 							}else{
 								?>
-								<a href="?loging"><div class="li blurred-bg bialy"><span>Login</span></div></a>
+								<a href="loging"><div class="li blurred-bg bialy"><span>Login</span></div></a>
 								<?php
 							}
 							if(isset($_GET['act'])){
@@ -101,7 +102,7 @@ include 'connect.php';
 					<div class="content">
 							<?php
 								if(isset($_GET['act'])){
-//############### ID ################
+//############### ACTOR ################
 							?>
 								<img src="img/<?php echo $id ?>.png" class="img_content" alt="Will cały">
 									<div class="przedstawienie" id="d1" <?php if(isset($_SESSION['loggedin']) && $_SESSION['typ'] == 'admin'){echo "contenteditable='true'";} ?>onBlur="SaveToDatabase(this,this,'<?php echo $row['id']; ?>')"><?php echo $row['d1'] ?></div>
@@ -143,9 +144,9 @@ include 'connect.php';
 								} else if(isset($_GET['loging']) ){
 //############### LOGIN ################
 									$zle = '';
-									if (isset($_GET['polacz'])) {
-										$login = $_GET['login'];
-										$pass = $_GET['pass'];
+									if (isset($_POST['polacz'])) {
+										$login = $_POST['login'];
+										$pass = $_POST['pass'];
 										//SQL INJECTION PROTECTION
 											$stmt = $conn->prepare('SELECT * FROM members WHERE login = ?');
 											$stmt->bind_param('s', $login);
@@ -154,9 +155,8 @@ include 'connect.php';
 										if ($result->num_rows > 0) {
 											// output data of each row
 											$row = $result->fetch_assoc();
-											$password_db = password_hash($pass, PASSWORD_BCRYPT, $options);
 												if (!password_verify($pass, $row['pass'])) {
-													$zle = '<div style="color:white;">Invalid password or username.</div>';
+													$zle = 'Invalid password or username.';
 												} else{
 													header( "refresh:0;url=index.php" );
 													$_SESSION['loggedin'] = true;
@@ -164,7 +164,7 @@ include 'connect.php';
 													$_SESSION['typ'] = $row['typ'];
 												}
 										} else {
-											$zle = '<div style="color:white;">Invalid password or username.</div>';
+											$zle = 'Invalid password or username.';
 										}
 									} else if(isset($_GET['logout'])){
 									header( "refresh:0;url=logout.php" );
@@ -175,23 +175,24 @@ include 'connect.php';
 									<script>
 										$('.login_form').hide();
 									</script>
-									<form action="logout.php" method="GET">
+									<form action="logout.php" method="POST">
 									<input type="submit" name="logout" value="Logout" style="position: absolute; top:5px; right:20%;">
 									</form>
 									<?php
 									} else {
 									?>
 									<div class="login_form">
-									<form action="" method="GET" id="Logowanie">
-										<input type="hidden" name="loging">
-										<p>Admin Panel</p>
-										<h1> Zaloguj się</h1>
-										<label style ="color:white">Użytkownik: </label><input type="text" name="login" required><br>
-										<label style ="color:white">Hasło: </label><input type="password" name="pass" required>
-										<br>
-										<a href="?register">Rejestracja</a>
-										<input type="submit" name="polacz" value="Połącz">
-									</form> 
+										<form action="" method="POST" id="Logowanie">
+											<input type="hidden" name="loging">
+											<p>Admin Panel</p>
+											<h1> Zaloguj się</h1>
+											<label style ="color:white">Użytkownik: </label><input type="text" name="login" required><br>
+											<label style ="color:white">Hasło: </label><input type="password" name="pass" required>
+											<br>
+											<a href="?register">Rejestracja</a>
+											<input type="submit" name="polacz" value="Połącz">
+										</form> 
+									</div>
 									<?php
 										echo $zle;
 									}
@@ -213,15 +214,15 @@ include 'connect.php';
 													$options = [
 													'cost' => 11
 													];
-														if(isset($_GET['rejestr'])){
+														if(isset($_POST['rejestr'])){
 															$sql = "SELECT * FROM members WHERE id";
 															$result = $conn->query($sql);
 															if($result->num_rows > 0){
 																$row = $result->fetch_assoc();
 															}
-															$login = $_GET['login'];
-															$pass = $_GET['pass'];
-															$quest = $_GET['quest'];
+															$login = $_POST['login'];
+															$pass = $_POST['pass'];
+															$quest = $_POST['quest'];
 															if($login == $row['login']){
 																echo "Podany login już istnieje. Wybierz inny<br>";
 															}else {
@@ -229,12 +230,11 @@ include 'connect.php';
 															$stmt = $conn->prepare('INSERT INTO members (login, pass, quest, typ) VALUES (?,?,?,"member")');
 															$stmt->bind_param('sss', $login, $password_db, $quest );
 															$stmt->execute();
-																$stmt->close();
 																header( "refresh:0;url=index.php?loging" );
 															}
 														}
 													?>
-													<form action="index.php?register" method="GET">
+													<form action="index.php?register" method="POST">
 													<input type="hidden" name="register">
 														<h1> Zarejestruj się</h1>
 														<label>Login: </label><input type="text" name="login" required>
@@ -271,11 +271,11 @@ include 'connect.php';
 				  e.preventDefault();
 				  $('#control_panel').hide();
 				$('#control_panel').fadeIn(500);
-				$('#control_panel').animate({height:'80%',width:'40%'},500);
+				$('#control_panel').animate({height:'80%',width:'70%'},500);
 				$('#mask').fadeIn(500);
 			 });
 			
-			 $(document).on('click', '#mask', function(){
+			 $(document).on('click touchstart', '#mask', function(){
 				$('#control_panel').animate({height:'0',width:'0'},500);
 				$('#control_panel').fadeOut('slow');
 				$('#control_panel').hide(400);
@@ -287,7 +287,7 @@ include 'connect.php';
 					users_can_register = 0;
 				}
 						$.ajax({
-							type: "GET",
+							type: "POST",
 							url: "ajax.php",
 							data:{zapisz:"true",users_can_register:users_can_register}
 						});
@@ -296,7 +296,7 @@ include 'connect.php';
 		});
 		function SaveToDatabase(id,content,act){
 				 $.ajax({
-							type: "GET",
+							type: "POST",
 							url: "update.php",
 							data:{id:id.getAttribute("id"),content:content.innerHTML, act:act }
 						});

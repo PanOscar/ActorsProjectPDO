@@ -49,6 +49,10 @@ footer p {
 	font-family: Geovana;
 	src: url(../Geovana.otf);
 }
+@font-face{
+	font-family: Brush Script MT;
+	src: url(../Brush Script MT.ttf);
+}
 /* ADMIN PANEL
    ========================================================================== */
 #mask {
